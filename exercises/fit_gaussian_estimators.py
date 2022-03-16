@@ -50,7 +50,7 @@ def test_multivariate_gaussian():
          [0,0,1,0],
          [0.5,0,0,1]])
 
-    S = np.random.multivariate_normal(means,covMat,1000)
+    S = np.random.multivariate_normal(means,covMat,10)
     X = MultivariateGaussian()
     X.fit(S)
     print(X.mu_)

@@ -160,7 +160,7 @@ class MultivariateGaussian:
         Then sets `self.fitted_` attribute to `True`
         """
         self.mu_ = np.mean(X,axis=0)
-        self.cov_ = np.cov(X)
+        self.cov_ = np.cov(X,rowvar=False)
         self.fitted_ = True
         return self
 
@@ -189,7 +189,7 @@ class MultivariateGaussian:
         pdfs = np.array()
         for row in X:
             Xi_centered = row - self.mu_
-            np.append(pdfs, np.exp(-0.5*(np.transpose(Xi_centered))@np.linalg.inv(self.cov_)@Xi_centered)/denominator)
+            np.append(pdfs, np.exp(-0.5*(Xi_centered)@np.linalg.inv(self.cov_)@np.transpose(Xi_centered))/denominator)
 
 
     @staticmethod
@@ -217,6 +217,6 @@ class MultivariateGaussian:
         s2 = -m/2 * np.log(np.linalg.det(cov))
         s3 = 0
         for row in X:
-            s3 += np.transpose(row-mu)@np.linalg.inv(cov)@(row - mu)
+            s3 += (row-mu)@np.linalg.inv(cov)@np.transpose(row - mu)
         s3 = -0.5*s3
         return s1+s2+s3
