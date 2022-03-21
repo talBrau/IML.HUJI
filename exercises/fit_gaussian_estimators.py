@@ -77,7 +77,7 @@ def test_multivariate_gaussian():
     fig5.show()
 
     # Question 6 - Maximum likelihood
-    j_max, i_max = np.unravel_index(np.argmax(likelyHoods), np.shape(likelyHoods))
+    i_max, j_max = np.unravel_index(np.argmax(likelyHoods), np.shape(likelyHoods))
     val1, val3 = f1[i_max], f3[j_max]
     print('The model achieved the maximum log liklyhood was given by (val1,val3): ')
     print(val1, val3)
