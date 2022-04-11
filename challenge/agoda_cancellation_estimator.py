@@ -2,6 +2,10 @@ from __future__ import annotations
 from typing import NoReturn
 from IMLearn.base import BaseEstimator
 import numpy as np
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVR
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
 
 class AgodaCancellationEstimator(BaseEstimator):
@@ -22,6 +26,7 @@ class AgodaCancellationEstimator(BaseEstimator):
 
         """
         super().__init__()
+        self._model = make_pipeline(StandardScaler(), SVR(kernel="rbf", C=1.0, epsilon=0.2))
 
     def _fit(self, X: np.ndarray, y: np.ndarray) -> NoReturn:
         """
@@ -39,7 +44,7 @@ class AgodaCancellationEstimator(BaseEstimator):
         -----
 
         """
-        pass
+        self._model.fit(X, y)
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -55,7 +60,8 @@ class AgodaCancellationEstimator(BaseEstimator):
         responses : ndarray of shape (n_samples, )
             Predicted responses of given samples
         """
-        return np.zeros(X.shape[0])
+
+        return self._model.predict(X)
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
