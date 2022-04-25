@@ -38,14 +38,18 @@ def run_perceptron():
     """
     for n, f in [("Linearly Separable", "linearly_separable.npy"), ("Linearly Inseparable", "linearly_inseparable.npy")]:
         # Load dataset
-        raise NotImplementedError()
+        X,Y = load_dataset('../datasets/'+f)
 
+        def loss_callback(fit: Perceptron, x: np.ndarray, y: int):
+            losses.append(fit.loss(X,Y))
         # Fit Perceptron and record loss in each fit iteration
         losses = []
-        raise NotImplementedError()
+        perceptron = Perceptron(callback=loss_callback)
+        perceptron.fit(X,Y)
 
         # Plot figure of loss as function of fitting iteration
-        raise NotImplementedError()
+        px.line(losses).show()
+        print(losses)
 
 
 def get_ellipse(mu: np.ndarray, cov: np.ndarray):
@@ -79,16 +83,27 @@ def compare_gaussian_classifiers():
     """
     for f in ["gaussian1.npy", "gaussian2.npy"]:
         # Load dataset
-        raise NotImplementedError()
+        X,y =load_dataset('../datasets/' + f)
+        # print(data[0].shape,data[1].shape)
 
         # Fit models and predict over training set
-        raise NotImplementedError()
+        lda = LDA()
+        naive_bayes = GaussianNaiveBayes()
+        lda.fit(X,y)
+        naive_bayes.fit(X,y)
+        lda_pred = lda.predict(X)
+        bayes_pred = naive_bayes.predict(X)
+
+
 
         # Plot a figure with two suplots, showing the Gaussian Naive Bayes predictions on the left and LDA predictions
         # on the right. Plot title should specify dataset used and subplot titles should specify algorithm and accuracy
         # Create subplots
         from IMLearn.metrics import accuracy
-        raise NotImplementedError()
+        fig = make_subplots(rows=1,cols=2,subplot_titles=['LDA','Gaussian Naive Bayes'])
+        fig.add_traces([go.Scatter(x = lda_pred,mode='markers',showlegend=True),
+                        go.Scatter(data = naive_bayes,mode='markers',showlegend=True)])
+        fig.show()
 
         # Add traces for data-points setting symbols and colors
         raise NotImplementedError()
@@ -102,5 +117,5 @@ def compare_gaussian_classifiers():
 
 if __name__ == '__main__':
     np.random.seed(0)
-    run_perceptron()
+    # run_perceptron()
     compare_gaussian_classifiers()
