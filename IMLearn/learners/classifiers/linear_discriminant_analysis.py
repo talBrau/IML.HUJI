@@ -59,7 +59,7 @@ class LDA(BaseEstimator):
 
         for i, k in enumerate(self.classes_):
             x_k = X[y == k]
-            self.mu_[i] = np.mean(x_k)
+            self.mu_[i] = np.mean(x_k,axis=0)
             self.pi_[i] = x_k.shape[0] / self.m_
             self.cov_ += (x_k - self.mu_[i]).T.dot(x_k - self.mu_[i])
 

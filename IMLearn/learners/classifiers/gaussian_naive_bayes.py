@@ -42,20 +42,21 @@ class GaussianNaiveBayes(BaseEstimator):
         y : ndarray of shape (n_samples, )
             Responses of input data to fit to
         """
+
         self.m_ = X.shape[0]
         self.d_ = X.shape[1]
         self.classes_ = np.unique(y)
         self.k_ = self.classes_.shape[0]
-
+        #
         self.mu_ = np.zeros((self.k_, self.d_))
         self.vars_ = np.zeros((self.k_, self.d_))
         self.pi_ = np.zeros(self.k_)
 
         for i, k in enumerate(self.classes_):
             x_k = X[y == k]
-            self.mu_[i] = np.mean(x_k)
+            self.mu_[i] = np.mean(x_k,axis=0)
             self.pi_[i] = x_k.shape[0] / self.m_
-            self.vars_[i] = np.var(x_k, axis=0, ddof=1)
+            self.vars_[i] = np.var(x_k, axis=0)
 
     def _predict(self, X: np.ndarray) -> np.ndarray:
         """
@@ -71,6 +72,7 @@ class GaussianNaiveBayes(BaseEstimator):
         responses : ndarray of shape (n_samples, )
             Predicted responses of given samples
         """
+
         pred = np.zeros((self.k_, self.m_))
         for i in range(self.classes_.shape[0]):
             log_pi = np.log(self.pi_[i])
@@ -97,12 +99,11 @@ class GaussianNaiveBayes(BaseEstimator):
         if not self.fitted_:
             raise ValueError("Estimator must first be fitted before calling `likelihood` function")
 
-        liklyhoods = np.zeros((self.k_, self.m_))
-        for i in range(self.k_):
-            x_mu = X - self.mu_[i]
-            liklyhoods[i] = self.pi_[i] * np.product(
-                np.exp(-x_mu ** 2 / 2 * self.vars_[i]) / np.square(2 * np.pi) * self.vars_[i])
-        return liklyhoods.T
+        l_k = np.zeros((X.shape[0], self.classes_.shape[0]))
+        for i in range(self.classes_.shape[0]):
+            s = 1 / 2 * np.sum((((X - self.mu_[i]) ** 2) / self.vars_[i]) + np.log(self.vars_[i]), axis=1)
+            l_k[:, i] = np.log(self.pi_[i]) - s
+        return l_k
 
     def _loss(self, X: np.ndarray, y: np.ndarray) -> float:
         """
